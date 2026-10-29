@@ -36,17 +36,35 @@ def salvar_historico(historico):
     )
 
 
+
 def preparar_mensagem(oferta):
-    if oferta["preco"] is None or not oferta["link"]:
+    if oferta.get("preco") is None or not oferta.get("link"):
         return None
 
-    return (
-        "🔥 TECNOPRO OFERTAS\n\n"
-        f"📦 {oferta['nome']}\n"
-        f"🏪 Loja: {oferta['loja']}\n"
-        f"💰 Preço: R$ {oferta['preco']:.2f}\n\n"
-        f"🛒 Comprar: {oferta['link']}"
+    nome = oferta["nome"]
+    loja = oferta["loja"]
+    preco = oferta["preco"]
+    preco_antigo = oferta.get("preco_antigo")
+    cupom = oferta.get("cupom")
+    link = oferta["link"]
+
+    mensagem = (
+        "🔥 TECNOPRO OFERTAS 🔥\n\n"
+        f"📦 {nome}\n\n"
+        f"🛒 Loja: {loja}\n"
     )
+
+    if preco_antigo is not None:
+        mensagem += f"❌ De: R$ {preco_antigo:.2f}\n"
+
+    mensagem += f"💰 Por: R$ {preco:.2f}\n"
+
+    if cupom:
+        mensagem += f"🏷️ Cupom: {cupom}\n"
+
+    mensagem += f"\n🔗 Comprar: {link}"
+
+    return mensagem
 
 
 async def main():
