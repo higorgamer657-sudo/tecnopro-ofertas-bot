@@ -30,6 +30,17 @@ PALAVRAS_TECNOLOGIA = [
     "smartphone", "headset", "roteador"
 ]
 
+
+def eh_tecnologia(produto):
+    nome = str(produto.get("nome", "")).lower()
+    categoria = str(produto.get("categoria", "")).lower()
+
+    texto = nome + " " + categoria
+
+    return any(
+        palavra in texto
+        for palavra in PALAVRAS_TECNOLOGIA
+    )
 def carregar_historico():
     if ARQUIVO_HISTORICO.exists():
         return set(json.loads(
