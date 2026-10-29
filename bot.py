@@ -95,6 +95,7 @@ async def main():
     novas_ofertas = []
 
     for oferta in OFERTAS:
+        oferta["eh_tecnologia"] = eh_tecnologia(oferta)
         mensagem = preparar_mensagem(oferta)
 
         if not mensagem:
