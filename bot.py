@@ -14,7 +14,21 @@ ARQUIVO_HISTORICO = Path("ofertas_publicadas.json")
 
 OFERTAS = []
 
+# Configuracoes de selecao das ofertas
+PRIORIDADE_TECNOLOGIA = 70
+PRIORIDADE_OUTRAS_CATEGORIAS = 30
 
+# Quantidade maxima de ofertas por execucao
+MAX_OFERTAS_POR_EXECUCAO = 2
+
+# Categorias prioritarias
+PALAVRAS_TECNOLOGIA = [
+    "ssd", "processador", "placa de video",
+    "memoria ram", "placa mae", "fonte",
+    "monitor", "teclado", "mouse",
+    "notebook", "computador", "celular",
+    "smartphone", "headset", "roteador"
+]
 
 def carregar_historico():
     if ARQUIVO_HISTORICO.exists():
