@@ -1,13 +1,16 @@
 
 import asyncio
+import json
 import os
+from pathlib import Path
 from telegram import Bot
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CANAL = "@TecnoPro0fertas"
 
-# Ofertas cadastradas para teste
-# No futuro, esta lista sera alimentada automaticamente.
+ARQUIVO_HISTORICO = Path("ofertas_publicadas.json")
+
+# Ofertas de exemplo. Ainda nao sao buscadas automaticamente.
 OFERTAS = [
     {
         "nome": "SSD Kingston NV3 1TB",
@@ -18,21 +21,31 @@ OFERTAS = [
 ]
 
 
-def preparar_mensagem(oferta):
-    nome = oferta["nome"]
-    loja = oferta["loja"]
-    preco = oferta["preco"]
-    link = oferta["link"]
+def carregar_historico():
+    if ARQUIVO_HISTORICO.exists():
+        return set(json.loads(
+            ARQUIVO_HISTORICO.read_text(encoding="utf-8")
+        ))
+    return set()
 
-    if preco is None or not link:
+
+def salvar_historico(historico):
+    ARQUIVO_HISTORICO.write_text(
+        json.dumps(sorted(historico), ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
+
+
+def preparar_mensagem(oferta):
+    if oferta["preco"] is None or not oferta["link"]:
         return None
 
     return (
-        f"🔥 TECNOPRO OFERTAS\n\n"
-        f"📦 {nome}\n"
-        f"🏪 Loja: {loja}\n"
-        f"💰 Preço: R$ {preco:.2f}\n\n"
-        f"🛒 Comprar: {link}"
+        "🔥 TECNOPRO OFERTAS\n\n"
+        f"📦 {oferta['nome']}\n"
+        f"🏪 Loja: {oferta['loja']}\n"
+        f"💰 Preço: R$ {oferta['preco']:.2f}\n\n"
+        f"🛒 Comprar: {oferta['link']}"
     )
 
 
@@ -40,23 +53,29 @@ async def main():
     if not TOKEN:
         raise RuntimeError("Token nao configurado.")
 
-    mensagens = []
+    historico = carregar_historico()
+    novas_ofertas = []
 
     for oferta in OFERTAS:
         mensagem = preparar_mensagem(oferta)
-        if mensagem:
-            mensagens.append(mensagem)
 
-    if not mensagens:
-        print("Nenhuma oferta completa para publicar.")
+        if not mensagem:
+            continue
+
+        identificador = f"{oferta['link']}|{oferta['preco']}"
+
+        if identificador not in historico:
+            novas_ofertas.append((identificador, mensagem))
+
+    if not novas_ofertas:
+        print("Nenhuma oferta nova para publicar.")
         return
 
     async with Bot(TOKEN) as bot:
-        for mensagem in mensagens:
-            await bot.send_message(
-                chat_id=CANAL,
-                text=mensagem
-            )
+        for identificador, mensagem in novas_ofertas:
+            await bot.send_message(chat_id=CANAL, text=mensagem)
+            historico.add(identificador)
+            salvar_historico(historico)
 
     print("Ofertas publicadas com sucesso!")
 
