@@ -11,14 +11,18 @@ CANAL = "@TecnoPro0fertas"
 ARQUIVO_HISTORICO = Path("ofertas_publicadas.json")
 
 # Ofertas de exemplo. Ainda nao sao buscadas automaticamente.
+
 OFERTAS = [
     {
-        "nome": "SSD Kingston NV3 1TB",
-        "loja": "Mercado Livre",
-        "preco": None,
-        "link": ""
+        "nome": "🧪 TESTE - SSD Kingston NV3 1TB",
+        "loja": "Mercado Livre (simulação)",
+        "preco_antigo": 399.90,
+        "preco": 299.90,
+        "cupom": "TESTE20-NAO-VALIDO",
+        "link": "https://www.mercadolivre.com.br/"
     }
 ]
+
 
 
 def carregar_historico():
